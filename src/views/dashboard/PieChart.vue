@@ -1,79 +1,97 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}" />
+  <div>
+    <div class="chart" ref="diskUsageChart" style="height: 300px;"></div>
+<!--    <div class="chart" ref="diskTypeChart" style="height: 300px;"></div>-->
+  </div>
 </template>
 
 <script>
-import * as echarts from 'echarts'
-require('echarts/theme/macarons') // echarts theme
-import resize from './mixins/resize'
+import * as echarts from 'echarts';
+import { getServer } from "@/api/monitor/server";
 
 export default {
-  mixins: [resize],
-  props: {
-    className: {
-      type: String,
-      default: 'chart'
-    },
-    width: {
-      type: String,
-      default: '100%'
-    },
-    height: {
-      type: String,
-      default: '300px'
-    }
-  },
   data() {
     return {
-      chart: null
-    }
+      serverInfo: null
+    };
   },
   mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
-  },
-  beforeDestroy() {
-    if (!this.chart) {
-      return
-    }
-    this.chart.dispose()
-    this.chart = null
+    this.getList();
   },
   methods: {
-    initChart() {
-      this.chart = echarts.init(this.$el, 'macarons')
-
-      this.chart.setOption({
+    getList() {
+      getServer().then(response => {
+        console.log(response)
+        this.serverInfo = response.data;
+        this.renderCharts();
+      });
+    },
+    renderCharts() {
+      this.renderDiskUsageChart();
+      this.renderDiskTypeChart();
+    },
+    renderDiskUsageChart() {
+      const chartData = this.serverInfo.sysFiles.map(file => {
+        return {
+          name: file.dirName,
+          value: file.usage
+        };
+      });
+      const chart = echarts.init(this.$refs.diskUsageChart);
+      chart.setOption({
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: chartData.map(item => item.name),
+          axisLabel: {
+            interval: 0,
+            rotate: 45
+          }
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          name: 'Disk Usage',
+          type: 'bar',
+          data: chartData.map(item => item.value)
+        }]
+      });
+    },
+    renderDiskTypeChart() {
+      const chartData = this.serverInfo.sysFiles.map(file => {
+        return {
+          name: file.sysTypeName,
+          value: file.usage
+        };
+      });
+      const chart = echarts.init(this.$refs.diskTypeChart);
+      chart.setOption({
         tooltip: {
           trigger: 'item',
           formatter: '{a} <br/>{b} : {c} ({d}%)'
         },
-        legend: {
-          left: 'center',
-          bottom: '10',
-          data: ['Industries', 'Technology', 'Forex', 'Gold', 'Forecasts']
-        },
-        series: [
-          {
-            name: 'WEEKLY WRITE ARTICLES',
-            type: 'pie',
-            roseType: 'radius',
-            radius: [15, 95],
-            center: ['50%', '38%'],
-            data: [
-              { value: 320, name: 'Industries' },
-              { value: 240, name: 'Technology' },
-              { value: 149, name: 'Forex' },
-              { value: 100, name: 'Gold' },
-              { value: 59, name: 'Forecasts' }
-            ],
-            animationEasing: 'cubicInOut',
-            animationDuration: 2600
+        series: [{
+          name: 'Disk Type',
+          type: 'pie',
+          radius: '55%',
+          center: ['50%', '50%'],
+          data: chartData,
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
           }
-        ]
-      })
+        }]
+      });
     }
   }
-}
+};
 </script>
