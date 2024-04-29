@@ -83,11 +83,11 @@
           <dict-tag :options="dict.type.sys_notice_type" :value="scope.row.noticeType"/>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="status" width="100">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.sys_notice_status" :value="scope.row.status"/>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="状态" align="center" prop="status" width="100">-->
+<!--        <template slot-scope="scope">-->
+<!--          <dict-tag :options="dict.type.sys_notice_status" :value="scope.row.status"/>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column label="创建者" align="center" prop="createBy" width="100" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="100">
         <template slot-scope="scope">
@@ -144,15 +144,15 @@
 <!--            </el-form-item>-->
           </el-col>
           <el-col :span="24">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_notice_status"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{dict.label}}</el-radio>
-              </el-radio-group>
-            </el-form-item>
+<!--            <el-form-item label="状态">-->
+<!--              <el-radio-group v-model="form.status">-->
+<!--                <el-radio-->
+<!--                  v-for="dict in dict.type.sys_notice_status"-->
+<!--                  :key="dict.value"-->
+<!--                  :label="dict.value"-->
+<!--                >{{dict.label}}</el-radio>-->
+<!--              </el-radio-group>-->
+<!--            </el-form-item>-->
           </el-col>
           <el-col :span="24">
             <el-form-item label="内容">
